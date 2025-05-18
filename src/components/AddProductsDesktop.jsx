@@ -39,6 +39,7 @@ const AddProductsDesktop = () => {
     const [showDiscounts, setShowDiscounts] = useState({});
     const [searchTerm, setSearchTerm] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
+    const [selectedProducts, setSelectedProducts] = useState(0);
 
     const productData = useMemo(() => [
         {
@@ -69,19 +70,6 @@ const AddProductsDesktop = () => {
         }
     ], []);
 
-    const increaseCount = () => setCount(prev => prev + 1);
-
-    const decreaseCount = (index) => {
-        if (count > 1) {
-            setCount(prev => prev - 1);
-            setShowDiscounts(prev => {
-                const updated = { ...prev };
-                delete updated[index];
-                return updated;
-            });
-        }
-    };
-
     // Debounce effect
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -97,6 +85,29 @@ const AddProductsDesktop = () => {
             product.title.toLowerCase().includes(debouncedSearch)
         );
     }, [debouncedSearch, productData]);
+
+    const increaseCount = () => setCount(prev => prev + 1);
+
+    const decreaseCount = (index) => {
+        if (count > 1) {
+            setCount(prev => prev - 1);
+            setShowDiscounts(prev => {
+                const updated = { ...prev };
+                delete updated[index];
+                return updated;
+            });
+        }
+    };
+    
+    const handleSelectedProducts = (e) => {
+        const { checked } = e.target;
+        if (checked) {
+            setSelectedProducts(prev => prev + 1);
+        } 
+        else {
+            setSelectedProducts(prev => prev - 1);
+        }
+    }
 
     return (
         <>
@@ -156,32 +167,24 @@ const AddProductsDesktop = () => {
                                                             filteredProducts.map(product => (
                                                                 <div key={product.id} className="flex flex-col gap-4 items-center  justify-end border p-2 rounded">
                                                                     <div className='flex flex-row items-center justify-start gap-2 w-full'>
-                                                                        <input type="checkbox" />
+                                                                        <input type="checkbox" className="h-[24px] w-[24px] border border-[#000] rounded focus:outline-none cursor-pointer accent-[#008060]" onChange={handleSelectedProducts}/>
                                                                         <img
                                                                             src={product.image.src}
                                                                             alt={product.title}
                                                                             className="w-[60px] h-[60px] object-cover rounded"
                                                                         />
-                                                                        <h2 className="font-medium text-sm">{product.title}</h2>
+                                                                        <h2 className="font-normal text-[16px] text-[#000] ">{product.title}</h2>
                                                                     </div>
                                                                     {product.variants.map(variant => (
 
                                                                         <div key={variant.id} className='flex flex-row items-start justify-between w-[80%]'>
-                                                                            <div className='flex flex-row items-center justify-start gap-2 w-full'>
-                                                                                <input type="checkbox" />
-                                                                                <h4>{variant.title}</h4>
+                                                                            <div className='flex flex-row items-center justify-center gap-2 w-full'>
+                                                                                <input type="checkbox" className="h-[24px] w-[24px] border border-[#000] rounded focus:outline-none cursor-pointer accent-[#008060]"/>
+                                                                                <h4 className="font-normal text-[16px] text-[#000] ">{variant.title}</h4>
                                                                             </div>
-                                                                            <div className='flex flex-row items-center justify-start gap-2 w-full'>
-                                                                                <h4>${variant.price}</h4>
+                                                                            <div className='flex flex-row items-center justify-center gap-2 w-full'>
+                                                                                <h4 className="font-normal text-[16px] text-[#000] ">${variant.price}</h4>
                                                                             </div>
-
-                                                                            {/* <ul className="text-xs text-gray-600 mt-1 space-y-1">
-                                                                                {product.variants.map(variant => (
-                                                                                    <li key={variant.id}>
-                                                                                        {variant.title} – ${variant.price}
-                                                                                    </li>
-                                                                                ))}
-                                                                            </ul> */}
                                                                         </div>
                                                                     ))}
                                                                 </div>
@@ -190,9 +193,14 @@ const AddProductsDesktop = () => {
                                                     </div>
                                                 </AlertDialogDescription>
                                             </AlertDialogHeader>
-                                            <AlertDialogFooter>
+                                            <AlertDialogFooter className="flex flex-row items-center justify-between!">
+                                                <div>
+                                                <AlertDialog className="bg-[#F5F5F5] text-[#000] hover:bg-[#0003]">{selectedProducts} products selected</AlertDialog>
+                                                </div>
+                                                <div className='flex flex-row items-center justify-center gap-2'>
                                                 <AlertDialogCancel >Cancel</AlertDialogCancel>
                                                 <AlertDialogAction className="bg-[#008060] hover:bg-[#008060ce]">Add</AlertDialogAction>
+                                                </div>
                                             </AlertDialogFooter>
                                         </AlertDialogContent>
                                     </AlertDialog>
