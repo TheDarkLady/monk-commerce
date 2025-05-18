@@ -16,6 +16,18 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -61,15 +73,28 @@ const AddProductsDesktop = () => {
                                     <input
                                         type="text"
                                         placeholder='Product Name'
-                                        className='p-2'
+                                        className='p-2 relative'
                                     />
-                                    <Button
-                                        variant="ghost"
-                                        className="absolute right-2"
-                                        onClick={() => { console.log("Edit") }}
-                                    >
-                                        <MdModeEdit className='text-[#0003]' />
-                                    </Button>
+                                    <AlertDialog className="absolute right-2 z-[99]">
+                                        <AlertDialogTrigger asChild>
+                                            <Button variant="ghost">
+                                                <MdModeEdit className='text-[#0003]' />
+                                            </Button>z
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This action cannot be undone. This will permanently delete your account
+                                                    and remove your data from our servers.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction>Continue</AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
                                 </div>
                             </TableCell>
                             <TableCell>
