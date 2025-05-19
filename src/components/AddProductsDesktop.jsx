@@ -27,7 +27,6 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { MdModeEdit } from "react-icons/md";
@@ -39,6 +38,7 @@ const AddProductsDesktop = () => {
     const [showDiscounts, setShowDiscounts] = useState({});
     const [searchTerm, setSearchTerm] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
+    const [selectedProductMap, setSelectedProductMap] = useState({});
     const [selectedProducts, setSelectedProducts] = useState(0);
 
     const productData = useMemo(() => [
@@ -70,11 +70,10 @@ const AddProductsDesktop = () => {
         }
     ], []);
 
-    // Debounce effect
     useEffect(() => {
         const handler = setTimeout(() => {
             setDebouncedSearch(searchTerm.toLowerCase());
-        }, 300); // 300ms debounce
+        }, 300);
 
         return () => clearTimeout(handler);
     }, [searchTerm]);
@@ -85,6 +84,11 @@ const AddProductsDesktop = () => {
             product.title.toLowerCase().includes(debouncedSearch)
         );
     }, [debouncedSearch, productData]);
+
+    useEffect(() => {
+        const count = Object.values(selectedProductMap).filter(p => p.selected).length;
+        setSelectedProducts(count);
+    }, [selectedProductMap]);
 
     const increaseCount = () => setCount(prev => prev + 1);
 
@@ -98,16 +102,35 @@ const AddProductsDesktop = () => {
             });
         }
     };
-    
-    const handleSelectedProducts = (e) => {
-        const { checked } = e.target;
-        if (checked) {
-            setSelectedProducts(prev => prev + 1);
-        } 
-        else {
-            setSelectedProducts(prev => prev - 1);
-        }
-    }
+
+    const handleProductSelection = (productId, checked) => {
+        setSelectedProductMap(prev => {
+            const variants = prev[productId]?.variants || [];
+            return {
+                ...prev,
+                [productId]: { selected: checked, variants: checked ? variants : [] }
+            };
+        });
+    };
+
+    const handleVariantSelection = (productId, variantId, checked) => {
+        setSelectedProductMap(prev => {
+            const product = prev[productId] || { selected: false, variants: [] };
+            const updatedVariants = checked
+                ? [...new Set([...product.variants, variantId])]
+                : product.variants.filter(id => id !== variantId);
+
+            const shouldSelectProduct = checked || updatedVariants.length > 0;
+
+            return {
+                ...prev,
+                [productId]: {
+                    selected: shouldSelectProduct,
+                    variants: updatedVariants
+                }
+            };
+        });
+    };
 
     return (
         <>
@@ -157,7 +180,6 @@ const AddProductsDesktop = () => {
                                                         />
                                                     </div>
 
-                                                    {/* Filtered Product Results */}
                                                     <div className="mt-4 space-y-4 max-h-[300px] overflow-y-auto">
                                                         {filteredProducts.length === 0 ? (
                                                             <div className="text-gray-500 text-center py-8">
@@ -167,7 +189,12 @@ const AddProductsDesktop = () => {
                                                             filteredProducts.map(product => (
                                                                 <div key={product.id} className="flex flex-col gap-4 items-center  justify-end border p-2 rounded">
                                                                     <div className='flex flex-row items-center justify-start gap-2 w-full'>
-                                                                        <input type="checkbox" className="h-[24px] w-[24px] border border-[#000] rounded focus:outline-none cursor-pointer accent-[#008060]" onChange={handleSelectedProducts}/>
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            className="h-[24px] w-[24px] border border-[#000] rounded focus:outline-none cursor-pointer accent-[#008060]"
+                                                                            checked={selectedProductMap[product.id]?.selected || false}
+                                                                            onChange={e => handleProductSelection(product.id, e.target.checked)}
+                                                                        />
                                                                         <img
                                                                             src={product.image.src}
                                                                             alt={product.title}
@@ -176,10 +203,14 @@ const AddProductsDesktop = () => {
                                                                         <h2 className="font-normal text-[16px] text-[#000] ">{product.title}</h2>
                                                                     </div>
                                                                     {product.variants.map(variant => (
-
                                                                         <div key={variant.id} className='flex flex-row items-start justify-between w-[80%]'>
                                                                             <div className='flex flex-row items-center justify-center gap-2 w-full'>
-                                                                                <input type="checkbox" className="h-[24px] w-[24px] border border-[#000] rounded focus:outline-none cursor-pointer accent-[#008060]"/>
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    className="h-[24px] w-[24px] border border-[#000] rounded focus:outline-none cursor-pointer accent-[#008060]"
+                                                                                    checked={selectedProductMap[product.id]?.variants.includes(variant.id) || false}
+                                                                                    onChange={e => handleVariantSelection(product.id, variant.id, e.target.checked)}
+                                                                                />
                                                                                 <h4 className="font-normal text-[16px] text-[#000] ">{variant.title}</h4>
                                                                             </div>
                                                                             <div className='flex flex-row items-center justify-center gap-2 w-full'>
@@ -195,11 +226,11 @@ const AddProductsDesktop = () => {
                                             </AlertDialogHeader>
                                             <AlertDialogFooter className="flex flex-row items-center justify-between!">
                                                 <div>
-                                                <AlertDialog className="bg-[#F5F5F5] text-[#000] hover:bg-[#0003]">{selectedProducts} products selected</AlertDialog>
+                                                    <AlertDialog className="bg-[#F5F5F5] text-[#000] hover:bg-[#0003]">{selectedProducts} products selected</AlertDialog>
                                                 </div>
                                                 <div className='flex flex-row items-center justify-center gap-2'>
-                                                <AlertDialogCancel >Cancel</AlertDialogCancel>
-                                                <AlertDialogAction className="bg-[#008060] hover:bg-[#008060ce]">Add</AlertDialogAction>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction className="bg-[#008060] hover:bg-[#008060ce]">Add</AlertDialogAction>
                                                 </div>
                                             </AlertDialogFooter>
                                         </AlertDialogContent>
