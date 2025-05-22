@@ -1,6 +1,6 @@
 import React from 'react'
 
-const AddProductsMobile = () => {
+const SearchPopup = () => {
   return (
     <div>
       
@@ -8,4 +8,4 @@ const AddProductsMobile = () => {
   )
 }
 
-export default AddProductsMobile
+export default SearchPopup
