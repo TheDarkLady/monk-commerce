@@ -3,7 +3,7 @@ import AddProductsDesktop from './AddProductsDesktop'
 
 const Products = () => {
   return (
-    <div className='flex flex-col items-start justify-start w-full max-w-[1024px] mx-auto my-[67px] h-screen px-10'>
+    <div className='flex flex-col items-start justify-start w-full max-w-[1024px] mx-auto my-[67px] px-10'>
       <div className='w-full px-4 pb-10'>
         <h1 className='text-[#202223] font-semibold  text-[16px]'>Add Products</h1>
       </div>
