@@ -74,7 +74,7 @@ const SearchPopup = () => {
               <div className='flex flex-row justify-start items-center w-full gap-3 border-b border-[#0003] px-8 py-3'>
                 <input
                   type="checkbox"
-                  className="w-[20px] h-[20px] border border-[#008060] rounded  checked:bg-[#008060] "
+                  className="appearance-none w-[20px] h-[20px] border border-[#0003] rounded apperance checked:bg-[#008060]  accent-[#008060]"
                 />
 
                 <img src={product.image.src} alt={product.title} className='w-[50px] h-[50px] object-cover rounded border' />
@@ -86,7 +86,7 @@ const SearchPopup = () => {
                     <div className='flex flex-row justify-center items-center gap-3'>
                       <input
                         type="checkbox"
-                        className="w-[20px] h-[20px] border border-[#008060] rounded  checked:bg-[#008060] checked:border-[#008060] checked:text-white flex justify-center items-center relative after:content-['✔'] after:absolute after:text-white after:text-[14px] after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2"
+                        className="appearance-none h-[24px] w-[24px] border border-[#0003] rounded  focus:outline-none cursor-pointer accent-[#008060]"
                       />
 
                       <h4 className='font-normal text-[16px]'>{variant.title}</h4>
