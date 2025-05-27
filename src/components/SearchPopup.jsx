@@ -33,7 +33,7 @@ const sampleResponse = [
   }
 ]
 
-const SearchPopup = ({ setShowPopup }) => {
+const SearchPopup = ({ setShowPopup, onAddProducts }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredProducts, setFilteredProducts] = useState(sampleResponse);
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -97,6 +97,17 @@ const SearchPopup = ({ setShowPopup }) => {
       setSelectedProducts(prev => prev.filter(id => id !== productId));
     }
   };
+
+  const handleAdd = () => {
+    const selected = sampleResponse.filter(p => selectedProducts.includes(p.id)).map(p => (
+      {
+      ...p, 
+      variants: p.variants.filter(v => selectedVariants.includes(v.id))
+    }
+    ));
+    onAddProducts(selected);
+    setShowPopup(false);
+  }
 
   return (
     <div className="fixed inset-0 z-50 bg-[#0003] flex justify-center items-center overflow-hidden">
@@ -168,7 +179,7 @@ const SearchPopup = ({ setShowPopup }) => {
             >
               Cancel
             </Button>
-            <Button className="text-white bg-[#008060] border border-[#008060] font-semibold text-[14px] px-4 py-2 rounded-md cursor-pointer hover:bg-[#006647]">
+            <Button className="text-white bg-[#008060] border border-[#008060] font-semibold text-[14px] px-4 py-2 rounded-md cursor-pointer hover:bg-[#006647]"  onClick={handleAdd}>
               Add
             </Button>
           </div>
