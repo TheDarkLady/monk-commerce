@@ -165,7 +165,7 @@ const AddProductsDesktop = () => {
                 </div>
             </div>
                 {showPopup &&
-                    <SearchPopup id="searchpopup"  />
+                    <SearchPopup id="searchpopup" setShowPopup={setShowPopup}/>
                 }
         </>
     )
