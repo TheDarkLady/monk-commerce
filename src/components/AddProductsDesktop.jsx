@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { RxDragHandleDots2 } from 'react-icons/rx';
-import SearchPopup from './searchPopup';
+import SearchPopup from './SearchPopup';
 import {
     Select,
     SelectContent,
