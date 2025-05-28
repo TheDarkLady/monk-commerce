@@ -51,9 +51,10 @@ const AddProductsDesktop = () => {
     const handleAddProducts = products => {
         setSelectedProductsArray(prev => {
             const updated = [...prev];
-            updated[editingIndex] = products[0];
+            updated.splice(editingIndex, 1, ...products);
             return updated;
         });
+        setCount(prev => prev - 1 + products.length);
         setShowPopup(false);
     };
 

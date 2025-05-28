@@ -12,35 +12,36 @@ const SearchPopup = ({ setShowPopup, onAddProducts }) => {
 
   useEffect(() => {
     const controller = new AbortController();
-    const timeout = setTimeout(() => {
-      const fetchData = async () => {
-        setLoading(true);
-        try {
-          const response = await fetch(
-            `https://stageapi.monkcommerce.app/task/products/search?search=${encodeURIComponent(searchTerm)}&page=0&limit=20`,
-            {
-              method: 'GET',
-              headers: {
-                'x-api-key': productsAPIKey,
-                'Content-Type': 'application/json',
-              },
-              signal: controller.signal,
-            }
-          );
 
-          if (!response.ok) throw new Error('Failed to fetch products');
-
-          const data = await response.json();
-          setProducts(data); // Assuming API returns array of products
-        } catch (err) {
-          if (err.name !== 'AbortError') {
-            console.error(err);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `https://stageapi.monkcommerce.app/task/products/search?search=${encodeURIComponent(searchTerm)}&page=0&limit=20`,
+          {
+            method: 'GET',
+            headers: {
+              'x-api-key': productsAPIKey,
+              'Content-Type': 'application/json',
+            },
+            signal: controller.signal,
           }
-        } finally {
-          setLoading(false);
-        }
-      };
+        );
 
+        if (!response.ok) throw new Error('Failed to fetch products');
+
+        const data = await response.json();
+        setProducts(data); // Assuming API returns array of products
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error(err);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const timeout = setTimeout(() => {
       fetchData();
     }, 300);
 
@@ -48,7 +49,8 @@ const SearchPopup = ({ setShowPopup, onAddProducts }) => {
       clearTimeout(timeout);
       controller.abort();
     };
-  }, [searchTerm]);
+  }, [searchTerm, productsAPIKey]);
+
 
   const handleProductToggle = (product) => {
     const isSelected = selectedProducts.includes(product.id);
@@ -83,7 +85,7 @@ const SearchPopup = ({ setShowPopup, onAddProducts }) => {
 
     // Update product selection state
     const product = products.find(p => p.id === productId);
-    const allVariantsSelected = product.variants.some(v => updatedVariants.includes(v.id));
+    const allVariantsSelected = product.variants.every(v => updatedVariants.includes(v.id));
 
     if (allVariantsSelected) {
       setSelectedProducts(prev => [...new Set([...prev, productId])]);
@@ -91,6 +93,7 @@ const SearchPopup = ({ setShowPopup, onAddProducts }) => {
       setSelectedProducts(prev => prev.filter(id => id !== productId));
     }
   };
+
 
   const handleAdd = () => {
     const selected = products.filter(p => selectedProducts.includes(p.id)).map(p => (
@@ -168,9 +171,9 @@ const SearchPopup = ({ setShowPopup, onAddProducts }) => {
         {/* Footer */}
         <div className='bottom-0 left-0 right-0 flex flex-row justify-between items-center px-8 py-3 w-full border-t border-[#0000001a] bg-white'>
           {
-            selectedProducts.length > 0 ? 
+            selectedProducts.length > 0 ?
               selectedProducts.length === 1 ? <h1>{selectedProducts.length} product selected</h1> : <h1>{selectedProducts.length} products selected</h1>
-            : <h1>No product selected</h1>
+              : <h1>No product selected</h1>
           }
           <div className='w-[50%] flex flex-row justify-end items-center gap-3'>
             <Button
