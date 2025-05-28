@@ -198,3 +198,7 @@ const SearchPopup = ({ setShowPopup, onAddProducts }) => {
 }
 
 export default SearchPopup;
+
+
+// 
+// 
