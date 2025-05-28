@@ -42,6 +42,8 @@ const AddProductsDesktop = () => {
     const [selectedProductsArray, setSelectedProductsArray] = useState(Array(count).fill(null));
     const [editingIndex, setEditingIndex] = useState(null);
     const [showVarients, setShowVarients] = useState(false)
+    const [dragVariantIndex, setDragVariantIndex] = useState(null);
+
 
     const increaseCount = () => {
         setCount(prev => prev + 1);
@@ -74,6 +76,34 @@ const AddProductsDesktop = () => {
         setShowPopup(false);
     };
 
+    const handleVariantDragStart = (variantIndex) => {
+        setDragVariantIndex(variantIndex);
+    };
+
+    const handleVariantDrop = (productIndex, dropIndex) => {
+        if (dragVariantIndex === null) return;
+
+        setSelectedProductsArray(prev => {
+            const updated = [...prev];
+            const product = updated[productIndex];
+            if (!product || !product.variants) return prev;
+
+            const reorderedVariants = [...product.variants];
+            const [dragged] = reorderedVariants.splice(dragVariantIndex, 1);
+            reorderedVariants.splice(dropIndex, 0, dragged);
+
+            updated[productIndex] = {
+                ...product,
+                variants: reorderedVariants,
+            };
+
+            return updated;
+        });
+
+        setDragVariantIndex(null);
+    };
+
+
     return (
         <>
             <div className='relative'>
@@ -104,7 +134,7 @@ const AddProductsDesktop = () => {
                                         readOnly
                                         value={selectedProductsArray[index]?.title || ''}
                                         placeholder="Select Product"
-                                        className="w-full p-1.5 pl-10 border border-[#0003] rounded focus:outline-none focus:border-[#000] placeholder:text-[#0003] shadow"
+                                        className="w-full p-1.5  border border-[#0003] rounded focus:outline-none focus:border-[#000] placeholder:text-[#0003] shadow"
                                     />
                                 </div>
 
@@ -164,7 +194,10 @@ const AddProductsDesktop = () => {
                                                 </a>
                                             </div>
                                             {selectedProductsArray[index].variants.map((variant, i) => (
-                                                <div key={variant.id} className='flex flex-row justify-end items-center text-sm text-gray-600 w-[80%] gap-2'>
+                                                <div key={variant.id} className='flex flex-row justify-end items-center text-sm text-gray-600 w-[80%] gap-2 cursor-grab active:cursor-grabbing' draggable
+                                                    onDragStart={() => handleVariantDragStart(i)}
+                                                    onDragOver={(e) => e.preventDefault()}
+                                                    onDrop={() => handleVariantDrop(index, i)}>
                                                     <div>
                                                         <RxDragHandleDots2 />
                                                     </div>
@@ -175,7 +208,7 @@ const AddProductsDesktop = () => {
                                                         type="text"
                                                         readOnly
                                                         value={variant.title}
-                                                        className="w-full p-1.5 pl-10 border border-[#0003] rounded focus:outline-none focus:border-[#000] placeholder:text-[#0003] shadow"
+                                                        className="w-full p-1.5  border border-[#0003] rounded focus:outline-none focus:border-[#000] placeholder:text-[#0003] shadow cursor-grab active:cursor-grabbing"
                                                     />
                                                     <div className='flex flex-row items-center justify-start gap-2'>
                                                         <Input
@@ -214,7 +247,7 @@ const AddProductsDesktop = () => {
                     ))}
 
                     {/* Add Product Button */}
-                    <div className='flex flex-row justify-end'>
+                    <div className='w-full flex flex-row justify-end'>
                         <Button
                             className="text-[#008060] bg-transparent border border-[#008060] font-semibold text-[14px] px-4 py-2 rounded-md mt-4 hover:bg-[#008060] hover:text-[#fff] cursor-pointer"
                             onClick={increaseCount}
