@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { RxDragHandleDots2 } from 'react-icons/rx';
-import SearchPopup from './SearchPopup';
+// import SearchPopup from './SearchPopup';
+import Popup from './Popup';
 import {
     Select,
     SelectContent,
@@ -302,7 +303,7 @@ const AddProductsDesktop = () => {
             </div>
 
             {showPopup && (
-                <SearchPopup
+                <Popup
                     id="searchpopup"
                     setShowPopup={setShowPopup}
                     onAddProducts={handleAddProducts}
