@@ -118,13 +118,13 @@ const AddProductsDesktop = () => {
 
     return (
         <>
-            <div className="relative">
+            <div className="relative w-full">
                 <div className="flex flex-col justify-center items-start gap-6">
                     {[...Array(count)].map((_, index) => (
                         <div
                             key={index}
                             style={{ opacity: dragProductIndex === index ? 0.5 : 1 }}
-                            className="flex flex-col justify-center items-start max-w-[700px] gap-2 cursor-grab active:cursor-grabbing"
+                            className="flex flex-col justify-center items-start w-full max-w-[700px] gap-2 cursor-grab active:cursor-grabbing"
                             draggable={draggingVariant.productIndex === null}
                             onDragStart={() => {
                                 if (draggingVariant.productIndex === null) {
@@ -135,33 +135,34 @@ const AddProductsDesktop = () => {
                             onDrop={() => handleProductsDragDrop(index)}
                             onDragEnd={() => setDragProductIndex(null)}
                         >
-                            <div className="flex flex-row justify-center items-center w-full">
-                                <div>
-                                    <RxDragHandleDots2 />
+                            <div className="flex flex-col md:flex-row justify-center items-end md:items-center w-full gap-2">
+                                <div className="flex flex-row justify-center items-center w-full">
+                                    <div>
+                                        <RxDragHandleDots2 />
+                                    </div>
+                                    <div className="ml-2">{index + 1}.</div>
+                                    <div className="relative w-full flex flex-row justify-center items-center pt-2 pb-2 ml-2">
+                                        <Button
+                                            variant="ghost"
+                                            className="absolute right-3 text-[#0003] h-[20px] w-[20px] cursor-pointer"
+                                            onClick={() => {
+                                                setEditingIndex(index);
+                                                setShowPopup(true);
+                                            }}
+                                        >
+                                            <MdModeEdit />
+                                        </Button>
+                                        <input
+                                            type="text"
+                                            readOnly
+                                            value={selectedProductsArray[index]?.title || ''}
+                                            placeholder="Select Product"
+                                            className="w-full p-1.5 border border-[#0003] rounded focus:outline-none focus:border-[#000] placeholder:text-[#0003] shadow"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="ml-2">{index + 1}.</div>
 
-                                <div className="relative w-full flex flex-row justify-center items-center pt-2 pb-2 ml-2">
-                                    <Button
-                                        variant="ghost"
-                                        className="absolute right-3 text-[#0003] h-[20px] w-[20px] cursor-pointer"
-                                        onClick={() => {
-                                            setEditingIndex(index);
-                                            setShowPopup(true);
-                                        }}
-                                    >
-                                        <MdModeEdit />
-                                    </Button>
-                                    <input
-                                        type="text"
-                                        readOnly
-                                        value={selectedProductsArray[index]?.title || ''}
-                                        placeholder="Select Product"
-                                        className="w-full p-1.5 border border-[#0003] rounded focus:outline-none focus:border-[#000] placeholder:text-[#0003] shadow"
-                                    />
-                                </div>
-
-                                <div className="ml-2">
+                                <div className="ml-0 md:ml-2 flex flex-row justify-center items-center gap-2">
                                     {!showDiscounts[index] ? (
                                         <Button
                                             className="bg-[#008060] text-[#F5F5F5] font-semibold text-[14px] px-4 py-2 rounded-md"
@@ -189,17 +190,23 @@ const AddProductsDesktop = () => {
                                             </Select>
                                         </div>
                                     )}
+                                    <Button variant="destructive"
+                                        className="block md:hidden text-[#F5F5F5] font-semibold text-[14px] px-4 py-2 rounded-md"
+                                        onClick={() => decreaseCount(index)}
+                                    >
+                                        Delete Product
+                                    </Button>
                                 </div>
 
                                 {count > 1 && (
-                                    <Button variant="ghost" onClick={() => decreaseCount(index)}>
+                                    <Button variant="ghost" className="hidden md:block" onClick={() => decreaseCount(index)}>
                                         <IoIosClose className="text-[#0003]" />
                                     </Button>
                                 )}
                             </div>
 
                             {selectedProductsArray[index]?.variants?.length > 1 && (
-                                <div className="flex flex-col justify-end items-end text-sm text-gray-600 w-full gap-2">
+                                <div className="flex flex-col justify-end items-end text-sm text-gray-600 w-full gap-6 md:gap-2">
                                     {showVarients ? (
                                         <>
                                             <div className="flex justify-end w-full">
@@ -220,7 +227,7 @@ const AddProductsDesktop = () => {
                                                                 ? 1
                                                                 : 1,
                                                     }}
-                                                    className="flex flex-row items-center w-[80%] gap-2 cursor-grab active:cursor-grabbing"
+                                                    className="flex flex-col md:flex-row items-center w-full md:w-[80%] gap-2 cursor-grab active:cursor-grabbing"
                                                     draggable
                                                     onDragStart={e => {
                                                         e.stopPropagation();
@@ -239,16 +246,27 @@ const AddProductsDesktop = () => {
                                                         handleVariantDrop(index, i);
                                                     }}
                                                 >
-                                                    <div>
-                                                        <RxDragHandleDots2 />
+                                                    <div className='flex flex-row items-center w-full gap-2'>
+                                                        <div>
+                                                            <RxDragHandleDots2 />
+                                                        </div>
+                                                        <div className="ml-2">{i + 1}.</div>
+                                                        <input
+                                                            type="text"
+                                                            readOnly
+                                                            value={variant.title}
+                                                            className="w-full p-1.5 border border-[#0003] rounded focus:outline-none focus:border-[#000] placeholder:text-[#0003] shadow cursor-grab active:cursor-grabbing"
+                                                        />
+                                                        <Button
+                                                        variant="ghost"
+                                                        className="block md:hidden"
+                                                        onClick={() =>
+                                                            handleDeleteVariant(index, variant.id)
+                                                        }
+                                                    >
+                                                        <IoIosClose className="text-[#e7000b]" />
+                                                    </Button>
                                                     </div>
-                                                    <div className="ml-2">{i + 1}.</div>
-                                                    <input
-                                                        type="text"
-                                                        readOnly
-                                                        value={variant.title}
-                                                        className="w-full p-1.5 border border-[#0003] rounded focus:outline-none focus:border-[#000] placeholder:text-[#0003] shadow cursor-grab active:cursor-grabbing"
-                                                    />
                                                     <div className="flex flex-row gap-2">
                                                         <Input
                                                             type="text"
@@ -267,6 +285,7 @@ const AddProductsDesktop = () => {
                                                     </div>
                                                     <Button
                                                         variant="ghost"
+                                                        className="hidden md:block"
                                                         onClick={() =>
                                                             handleDeleteVariant(index, variant.id)
                                                         }
