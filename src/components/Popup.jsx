@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { CiSearch } from "react-icons/ci";
 import { Button } from "@/components/ui/button"
 
@@ -9,6 +9,8 @@ const Popup = ({ setShowPopup, onAddProducts }) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [selectedVariants, setSelectedVariants] = useState([]);
   const [loading, setLoading] = useState(false);
+  const productCheckboxRefs = useRef({});
+
 
   useEffect(() => {
     const controller = new AbortController();
@@ -50,6 +52,28 @@ const Popup = ({ setShowPopup, onAddProducts }) => {
       controller.abort();
     };
   }, [searchTerm, productsAPIKey]);
+
+  useEffect(() => {
+    products.forEach(product => {
+      const ref = productCheckboxRefs.current[product.id];
+      if (ref) {
+        const variantIds = product.variants.map(v => v.id);
+        const selectedCount = variantIds.filter(id => selectedVariants.includes(id)).length;
+
+        if (selectedCount === 0) {
+          ref.indeterminate = false;
+          ref.checked = false;
+        } else if (selectedCount === variantIds.length) {
+          ref.indeterminate = false;
+          ref.checked = true;
+        } else {
+          ref.indeterminate = true;
+          ref.checked = false;
+        }
+      }
+    });
+  }, [selectedVariants, products]);
+
 
 
   const handleProductToggle = (product) => {
@@ -96,15 +120,17 @@ const Popup = ({ setShowPopup, onAddProducts }) => {
 
 
   const handleAdd = () => {
-    const selected = products.filter(p => selectedProducts.includes(p.id)).map(p => (
-      {
+    const selected = products
+      .filter(p => p.variants.some(v => selectedVariants.includes(v.id)))
+      .map(p => ({
         ...p,
         variants: p.variants.filter(v => selectedVariants.includes(v.id))
-      }
-    ));
+      }));
+    console.log("Selected products with variants:", selected);
     onAddProducts(selected);
     setShowPopup(false);
   }
+
 
   return (
     <div className="fixed inset-0 z-50 bg-[#0003] flex justify-center items-center overflow-hidden">
@@ -139,6 +165,7 @@ const Popup = ({ setShowPopup, onAddProducts }) => {
                 <div className='flex flex-row justify-start items-center w-full gap-3 border-b border-[#0003] px-8 py-3'>
                   <input
                     type="checkbox"
+                    ref={el => productCheckboxRefs.current[product.id] = el}
                     className="w-[20px] h-[20px] border border-[#008060] rounded accent-[#008060]"
                     checked={selectedProducts.includes(product.id)}
                     onChange={() => handleProductToggle(product)}
@@ -185,7 +212,7 @@ const Popup = ({ setShowPopup, onAddProducts }) => {
             <Button
               className="text-white bg-[#008060] border border-[#008060] font-semibold text-[14px] px-4 py-2 rounded-md cursor-pointer hover:bg-[#006647]"
               onClick={handleAdd}
-              disabled={selectedProducts.length === 0}
+              disabled={selectedVariants.length === 0}
             >
               Add
             </Button>

@@ -102,6 +102,7 @@ const SearchPopup = ({ setShowPopup, onAddProducts }) => {
         variants: p.variants.filter(v => selectedVariants.includes(v.id))
       }
     ));
+    console.log("selectedProducts", selectedProducts)
     onAddProducts(selected);
     setShowPopup(false);
   }
